@@ -6,12 +6,14 @@ that.latestDeletedWords = [];
 function filterWords () {
     let nonFilteredWords = getUserText();
     let counterInput = document.getElementById('wordsCounter');
+    let btnAddWords = document.getElementById('btnAddWords');
     that.allWords = getWords(nonFilteredWords);
     that.originalWords = that.allWords;
     filteringAllWords();
     fillResultDiv();
     writeWordsCount();
     showHideElement(counterInput, that.allWords.length > 0);
+    showHideElement(btnAddWords, true);
     showCopyWordsBtn();
   }
 
@@ -159,6 +161,43 @@ function filterWords () {
     showHideElement(undoBtn, that.latestDeletedWords.length > 0);
     showCopyWordsBtn();
   }
+
+  function showHideAddWordsForm(){
+    showHideAddWordsInput();
+  }
+
+  function showHideAddWordsInput(){
+    let addWordsCont = document.getElementById('addWordsCont');
+    if(addWordsCont.classList.contains('invisible')){
+      addWordsCont.classList.remove('invisible');
+      return;
+    }
+    addWordsCont.classList.add('invisible');
+  }
+
+  function addNewWord(){
+    let wordCont = document.getElementById('addWordInput');
+    let newWord = wordCont.value;
+    if(!newWord){
+      wordCont.value = 'Invalid word';
+      return;
+    }
+    that.allWords.push(newWord);
+    that.originalWords.push(newWord);
+    let counterInput = document.getElementById('wordsCounter');
+    let undoBtn = document.getElementById('btnUndoDeleteWord');
+    filteringAllWords();
+    fillResultDiv();
+    writeWordsCount();
+    showHideElement(counterInput, that.allWords.length > 0);
+    showHideElement(undoBtn, that.latestDeletedWords.length > 0);
+    showCopyWordsBtn();
+  }
+
+  function resetWords(){
+    document.getElementById('nonFilteredWords').value = '';
+  }
+
 
   //----------------------------------------------------------------------------------------------------------------------------------
   //Image view functionalities
