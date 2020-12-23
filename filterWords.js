@@ -1,11 +1,13 @@
 let that = this;
 that.allWords = [];
+that.originalWords = [];
 that.latestDeletedWords = [];
 
 function filterWords () {
     let nonFilteredWords = getUserText();
     let counterInput = document.getElementById('wordsCounter');
     that.allWords = getWords(nonFilteredWords);
+    that.originalWords = that.allWords;
     filteringAllWords();
     fillResultDiv();
     writeWordsCount();
@@ -139,10 +141,11 @@ function filterWords () {
   }
 
   function undoDelete(){
-    that.allWords.push(that.latestDeletedWords[that.latestDeletedWords.length - 1]);
-    let lastElement = that.latestDeletedWords.length - 1;
-    if(lastElement){
+    let lastElement = that.latestDeletedWords[that.latestDeletedWords.length - 1];
+    let lastElPosition = that.originalWords.indexOf(lastElement);
+    if(lastElement && lastElPosition !== -1){
       that.latestDeletedWords.splice(that.latestDeletedWords.length - 1, 1);
+      that.allWords.splice(lastElPosition, 0, lastElement);
     }
     let counterInput = document.getElementById('wordsCounter');
     let undoBtn = document.getElementById('btnUndoDeleteWord');
