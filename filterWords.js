@@ -1,12 +1,15 @@
 let that = this;
 that.allWords = [];
+that.latestDeletedWords = [];
 
 function filterWords () {
     let nonFilteredWords = getUserText();
+    let counterInput = document.getElementById('wordsCounter');
     that.allWords = getWords(nonFilteredWords);
     filteringAllWords();
     fillResultDiv();
     writeWordsCount();
+    showHideElement(counterInput, that.allWords.length > 0);
     showCopyWordsBtn();
   }
 
@@ -54,16 +57,24 @@ function filterWords () {
 
   function showCopyWordsBtn(){
     let btn = document.getElementById('btnCopyWords');
-    if(that.allWords.length > 0){
-      if(btn.classList.contains('invisible')){
-        btn.classList.remove('invisible');
-      }
-      return;
+    // if(that.allWords.length > 0){
+      showHideElement(btn, that.allWords.length > 0);
+      // return;
       // console.log(btn.classList);
       // console.log(typeof btn.classList);
-    }
+    // }
 
-    btn.classList.add('invisible');
+    // btn.classList.add('invisible');
+  }
+
+  function showHideElement(el, condition){
+    if(condition){
+        if(el.classList.contains('invisible')){
+          el.classList.remove('invisible');
+        }
+      return;  
+    }
+    el.classList.add('invisible');
   }
 
   function createTagEl(word){
@@ -92,16 +103,30 @@ function filterWords () {
   }
 
   function removeCurrentWord(word){
-    let index  = that.allWords.indexOf(word);
-    if(index === -1){
-      alert('No such word');
-      return;
-    }
-    that.allWords.splice(index, 1);
+    let wordsObj = convertArrayToObj(that.allWords);
+    delete wordsObj[word];
+    that.allWords = Object.keys(wordsObj);
+    that.latestDeletedWords.push(word);
+    //old way to remove words from array
+    // that.allWords = Array.from(wordsObj);
+    // let index  = that.allWords.indexOf(word);
+    // if(index === -1){
+    //   alert('No such word');
+    //   return;
+    // }
+    // that.allWords.splice(index, 1);
+    let counterInput = document.getElementById('wordsCounter');
+    let undoBtn = document.getElementById('btnUndoDeleteWord');
     filteringAllWords();
     fillResultDiv();
     writeWordsCount();
+    showHideElement(counterInput, that.allWords.length > 0);
+    showHideElement(undoBtn, that.latestDeletedWords.length > 0);
     showCopyWordsBtn();
+  }
+
+  function convertArrayToObj(arr){
+    return arr.reduce((a,b)=> (a[b]=b,a),{});
   }
 
   function copyWords(){
@@ -111,6 +136,22 @@ function filterWords () {
     el.select();
     document.execCommand('copy');
     document.body.removeChild(el);
+  }
+
+  function undoDelete(){
+    that.allWords.push(that.latestDeletedWords[that.latestDeletedWords.length - 1]);
+    let lastElement = that.latestDeletedWords.length - 1;
+    if(lastElement){
+      that.latestDeletedWords.splice(that.latestDeletedWords.length - 1, 1);
+    }
+    let counterInput = document.getElementById('wordsCounter');
+    let undoBtn = document.getElementById('btnUndoDeleteWord');
+    filteringAllWords();
+    fillResultDiv();
+    writeWordsCount();
+    showHideElement(counterInput, that.allWords.length > 0);
+    showHideElement(undoBtn, that.latestDeletedWords.length > 0);
+    showCopyWordsBtn();
   }
 
   //----------------------------------------------------------------------------------------------------------------------------------
