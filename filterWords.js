@@ -145,6 +145,9 @@ function filterWords () {
     let lastElPosition = that.originalWords.indexOf(lastElement);
     if(lastElement && lastElPosition !== -1){
       that.latestDeletedWords.splice(that.latestDeletedWords.length - 1, 1);
+      if(lastElPosition !== 0 && lastElPosition !== that.allWords.length){
+        lastElPosition--;
+      }
       that.allWords.splice(lastElPosition, 0, lastElement);
     }
     let counterInput = document.getElementById('wordsCounter');
