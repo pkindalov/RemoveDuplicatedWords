@@ -13,17 +13,17 @@
   <body>
     <div class="container-fluid">
       <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-6">
+        <div class="col-lg-8 col-md-8 col-sm-8 jumbotron">
           <div class="form-group">
             <label for="nonFilteredWords">Put all words here</label>
             <textarea class="form-control" name="nonFilteredWordsTextArea" id="nonFilteredWords" rows="10"></textarea>
             <button class="btn btn-primary mt-3" onclick="filterWords();">Filter</button>
           </div>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-6">Image view:
+        <div class="col-lg-4 col-md-4 col-sm-4 jumbotron">Image view:
           <label for="imgURL">URL</label>
           <input type="url" class="form-control" id="imgInput"  />
-          <div id="imgContainer"></div>
+          <div class="mt-4" id="imgContainer"></div>
         </div>
       </div>
       <div class="row">
@@ -35,8 +35,13 @@
         <div class="col-lg-2 col-md-2 col-sm-2">
           <input class="form-control mt-5 invisible" id="wordsCounter" value="0" />
         </div>
-        <div class="col-lg-2 col-md-2 col-sm-2">
+        <div class="col-lg-4 col-md-4 col-sm-4">
           <button class="btn btn-primary mt-5 invisible" id="btnCopyWords" onclick="copyWords();">Copy Words</button>
+          <button class="btn btn-success mt-5 invisible" id="btnAddWords" onclick="showHideAddWordsForm();">Add Words</button>
+          <div class="invisible"  id="addWordsCont">
+            <input class="form-control mt-5" id="addWordInput"  />
+            <button class="btn btn-success mt-5" id="addingNewWord" onclick="addNewWord();">Add</button>
+          </div>
           <button class="btn btn-warning mt-5 invisible" id="btnUndoDeleteWord" onclick="undoDelete();">Undo</button>
         </div>
       </div>
