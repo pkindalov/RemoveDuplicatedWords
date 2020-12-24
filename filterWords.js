@@ -147,7 +147,7 @@ function filterWords () {
     let lastElPosition = that.originalWords.indexOf(lastElement);
     if(lastElement && lastElPosition !== -1){
       that.latestDeletedWords.splice(that.latestDeletedWords.length - 1, 1);
-      if(lastElPosition !== 0 && lastElPosition !== that.allWords.length){
+      if(lastElPosition > 0 && lastElPosition !== that.allWords.length){
         lastElPosition--;
       }
       that.allWords.splice(lastElPosition, 0, lastElement);
@@ -205,6 +205,12 @@ function filterWords () {
 
   that.imgInputCont = document.getElementById('imgInput');
   that.imgDivCont = document.getElementById('imgContainer');
+  that.imgHeightPercent = 40;
+  that.imgWidthPercent = 40;
+  that.imgCountId = 0;
+  that.errors = {
+    invalidURL: 'Invalid Input. Please enter a valid URL'
+  };
 
   that.imgInputCont.addEventListener('focus', function(e){
       if(that.imgDivCont && that.imgDivCont.children.length < 1){
@@ -218,8 +224,8 @@ function filterWords () {
   // return;
   let imgURL = e.target.value;
     
-    if(!imgURL){
-      that.imgCont.value = 'Invalid Input. Please enter a valid URL';
+    if(!imgURL || imgURL.indexOf('http') < 0){
+      alert('Invalid Input. Please enter a valid URL');
       return;
     }
 
@@ -247,8 +253,6 @@ function filterWords () {
          showImgByURL(url);
          return;
       }
-
-      // clearImageDivContainer();
      
     })
     .catch(err => {
@@ -265,40 +269,54 @@ function filterWords () {
 
 
   function showImgByURL(url){
+    that.imgCountId++;
+    let currentDivId = that.imgCountId;
     let imgEl = createImgEl(url);
-    let closeBtn = createCloseBtn();
+    let closeBtn = createCloseBtn(currentDivId);
+    let imgBtnCont = document.createElement('div');
+    imgBtnCont.setAttribute('id', 'image' + that.imgCountId);
+    imgBtnCont.setAttribute('class', 'ml-3');
+    imgBtnCont.style.display = 'inline';
+    imgBtnCont.append(imgEl);
+    imgBtnCont.append(closeBtn);
     // clearImageDivContainer();85555
     that.imgDivCont = !that.imgDivCont ? document.getElementById('imgContainer') : that.imgDivCont;
-    that.imgDivCont.append(imgEl);
-    that.imgDivCont.append(closeBtn);
+    that.imgDivCont.append(imgBtnCont);
+    // that.imgDivCont.innerHTML = '';
+    // that.imgDivCont.append(imgEl);
+    // that.imgDivCont.append(closeBtn);
   }
 
   function createImgEl(url){
     let img = document.createElement('img');
+    // that.imgCountId++;
     img.setAttribute('src', url);
     img.setAttribute('alt', 'keyworded image');
-    img.setAttribute('class', 'img-fluid');
-    img.style.height = '40%';
-    img.style.width = '40%';
+    img.setAttribute('class', 'img-fluid mt-3');
+    // img.setAttribute('id', 'image' + that.imgCountId);
+    img.style.height = that.imgHeightPercent + '%';
+    img.style.width = that.imgWidthPercent + '%';
     // img.style.height = (1200 * 0.5) + 'px';
     // img.style.width = (1200 * 0.5) + 'px';
     return img;
   }
 
-  function createCloseBtn(){
+  function createCloseBtn(currentDivId){
     let closeLink = document.createElement('a');
     closeLink.setAttribute('href', '#');
     closeLink.setAttribute('class', 'btn btn-danger');
     closeLink.innerText = 'X';
     closeLink.style.position = 'absolute';
     closeLink.style.marginLeft = '-50px';
-    closeLink.style.marginTop = '10px';
-    closeLink.onclick = () => clearImageDivContainer();
+    closeLink.style.marginTop = '20px';
+    closeLink.onclick = () => clearImageDivContainer(currentDivId);
     return closeLink;
   }
 
 
-  function clearImageDivContainer(){
-    that.imgDivCont = document.getElementById('imgContainer');
-    that.imgDivCont.innerHTML = '';
+  function clearImageDivContainer(currentDivId){
+    let elementForRemoving = document.getElementById('image' + currentDivId);
+    elementForRemoving.remove();
+    // that.imgDivCont = document.getElementById('imgContainer');
+    // that.imgDivCont.innerHTML = '';
   }
