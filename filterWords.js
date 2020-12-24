@@ -271,14 +271,16 @@ function filterWords () {
   function showImgByURL(url){
     that.imgCountId++;
     let currentDivId = that.imgCountId;
-    let imgEl = createImgEl(url);
+    let imgEl = createImgEl(url, {heightPercent: 0, widthPercent: 0});
     let closeBtn = createCloseBtn(currentDivId);
+    let zoomInBtn = createZoomInBtn(currentDivId);
     let imgBtnCont = document.createElement('div');
     imgBtnCont.setAttribute('id', 'image' + that.imgCountId);
     imgBtnCont.setAttribute('class', 'ml-3');
     imgBtnCont.style.display = 'inline';
     imgBtnCont.append(imgEl);
     imgBtnCont.append(closeBtn);
+    imgBtnCont.append(zoomInBtn);
     // clearImageDivContainer();85555
     that.imgDivCont = !that.imgDivCont ? document.getElementById('imgContainer') : that.imgDivCont;
     that.imgDivCont.append(imgBtnCont);
@@ -287,15 +289,16 @@ function filterWords () {
     // that.imgDivCont.append(closeBtn);
   }
 
-  function createImgEl(url){
+  function createImgEl(url, data){
+    let {heightPercent, widthPercent} = data;
     let img = document.createElement('img');
     // that.imgCountId++;
     img.setAttribute('src', url);
     img.setAttribute('alt', 'keyworded image');
     img.setAttribute('class', 'img-fluid mt-3');
     // img.setAttribute('id', 'image' + that.imgCountId);
-    img.style.height = that.imgHeightPercent + '%';
-    img.style.width = that.imgWidthPercent + '%';
+    img.style.height = (that.imgHeightPercent + heightPercent) + '%';
+    img.style.width = (that.imgWidthPercent + widthPercent) + '%';
     // img.style.height = (1200 * 0.5) + 'px';
     // img.style.width = (1200 * 0.5) + 'px';
     return img;
@@ -312,6 +315,45 @@ function filterWords () {
     closeLink.onclick = () => clearImageDivContainer(currentDivId);
     return closeLink;
   }
+
+  function createZoomInBtn(currentDivId){
+    let zoomInLink = document.createElement('a');
+    zoomInLink.setAttribute('href', '#');
+    zoomInLink.setAttribute('class', 'btn btn-primary');
+    zoomInLink.innerText = '+';
+    zoomInLink.style.position = 'absolute';
+    zoomInLink.style.marginLeft = '-50px';
+    zoomInLink.style.marginTop = '70px';
+    zoomInLink.onclick = () => zoomInImg(currentDivId);
+    return zoomInLink;
+  }
+
+  function zoomInImg(currentDivId){
+   let div = document.getElementById('image' + currentDivId);
+   let img = div.children[0];
+   let imgLink = img.src;
+   let newImgCont = document.createElement('div');
+   let imgEl = createImgEl(imgLink, {heightPercent: 60, widthPercent: 60});
+   newImgCont.style.position = 'absolute';
+   newImgCont.style.marginTop = '-65%';
+   newImgCont.style.zIndex = '999';
+  //  newImgCont.style.height = '800px';
+  //  newImgCont.style.width = '800px';
+  //  newImgCont.style.marginLeft = '30%';
+  //  newImgCont.innerText = imgLink;
+   newImgCont.setAttribute('id', 'zoomedImg' + currentDivId);
+   newImgCont.setAttribute('class', 'jumbotron zoomed');
+   newImgCont.append(imgEl);
+   newImgCont.onclick = () => closeZoomedImg(currentDivId);
+   document.getElementById('imgContainer').append(newImgCont);
+  //  document.body.append(newImgCont);
+  //  console.log(img.src);
+  }
+
+  function closeZoomedImg(currentDivId){
+    document.getElementById('zoomedImg' + currentDivId).remove();
+  }
+
 
 
   function clearImageDivContainer(currentDivId){
