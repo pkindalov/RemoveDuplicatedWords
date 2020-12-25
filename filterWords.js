@@ -163,11 +163,11 @@ function filterWords () {
   }
 
   function showHideAddWordsForm(){
-    showHideAddWordsInput();
+    showHideContainer('addWordsCont');
   }
 
-  function showHideAddWordsInput(){
-    let addWordsCont = document.getElementById('addWordsCont');
+  function showHideContainer(container){
+    let addWordsCont = document.getElementById(container);
     if(addWordsCont.classList.contains('invisible')){
       addWordsCont.classList.remove('invisible');
       return;
@@ -205,6 +205,7 @@ function filterWords () {
 
   that.imgInputCont = document.getElementById('imgInput');
   that.imgDivCont = document.getElementById('imgContainer');
+  that.imgBrowseCont = document.getElementById('browseImg');
   that.imgHeightPercent = 40;
   that.imgWidthPercent = 40;
   that.imgCountId = 0;
@@ -216,6 +217,10 @@ function filterWords () {
       if(that.imgDivCont && that.imgDivCont.children.length < 1){
         putImageFromClipboard();
       }
+  });
+
+  that.imgBrowseCont.addEventListener('change', function(){
+    readBrowseImg(this);
   });
 
 
@@ -278,6 +283,7 @@ function filterWords () {
     imgBtnCont.setAttribute('id', 'image' + that.imgCountId);
     imgBtnCont.setAttribute('class', 'ml-3');
     imgBtnCont.style.display = 'inline';
+    imgBtnCont.onclick = () => zoomInImg(currentDivId);
     imgBtnCont.append(imgEl);
     imgBtnCont.append(closeBtn);
     imgBtnCont.append(zoomInBtn);
@@ -330,19 +336,20 @@ function filterWords () {
 
   function zoomInImg(currentDivId){
    let div = document.getElementById('image' + currentDivId);
+   if(!div) return;
    let img = div.children[0];
    let imgLink = img.src;
    let newImgCont = document.createElement('div');
    let imgEl = createImgEl(imgLink, {heightPercent: 60, widthPercent: 60});
    newImgCont.style.position = 'absolute';
-   newImgCont.style.marginTop = '-65%';
+   newImgCont.style.marginTop = '-50%';
    newImgCont.style.zIndex = '999';
   //  newImgCont.style.height = '800px';
   //  newImgCont.style.width = '800px';
   //  newImgCont.style.marginLeft = '30%';
   //  newImgCont.innerText = imgLink;
    newImgCont.setAttribute('id', 'zoomedImg' + currentDivId);
-   newImgCont.setAttribute('class', 'jumbotron zoomed');
+   newImgCont.setAttribute('class', 'jumbotron bg-info zoomed');
    newImgCont.append(imgEl);
    newImgCont.onclick = () => closeZoomedImg(currentDivId);
    document.getElementById('imgContainer').append(newImgCont);
@@ -354,11 +361,36 @@ function filterWords () {
     document.getElementById('zoomedImg' + currentDivId).remove();
   }
 
-
-
   function clearImageDivContainer(currentDivId){
     let elementForRemoving = document.getElementById('image' + currentDivId);
     elementForRemoving.remove();
     // that.imgDivCont = document.getElementById('imgContainer');
     // that.imgDivCont.innerHTML = '';
+  }
+
+  function readBrowseImg(input){
+    if(input.files && input.files[0]){
+      let reader = new FileReader();
+
+      reader.onload = function(e){
+        let link = e.target.result;
+        showImgByURL(link);
+        // let img = createImgEl(link, {heightPercent: 20, widthPercent: 20});
+        // let img = document.createElement('img');
+        // img.src = e.target.result;
+        // img.setAttribute('height', '40%');
+        // img.setAttribute('width', '40%');
+        // that.imgDivCont.append(img);
+      }
+
+      reader.readAsDataURL(input.files[0])
+    }
+  }
+
+  function showHideURLform(){
+    showHideContainer('imgInput');
+  }
+
+  function showHideBrowseImgform(){
+    showHideContainer('browseImg');
   }
