@@ -341,20 +341,79 @@ function filterWords () {
    let imgLink = img.src;
    let newImgCont = document.createElement('div');
    let imgEl = createImgEl(imgLink, {heightPercent: 60, widthPercent: 60});
-   newImgCont.style.position = 'absolute';
-   newImgCont.style.marginTop = '-50%';
-   newImgCont.style.zIndex = '999';
-  //  newImgCont.style.height = '800px';
-  //  newImgCont.style.width = '800px';
-  //  newImgCont.style.marginLeft = '30%';
-  //  newImgCont.innerText = imgLink;
+   newImgCont = createModal({content: [imgEl] , title: 'Zoomed Image'});
+
+   
+
+
+  //  newImgCont.style.position = 'absolute';
+  //  newImgCont.style.marginTop = '-50%';
+  //  newImgCont.style.zIndex = '999';
    newImgCont.setAttribute('id', 'zoomedImg' + currentDivId);
-   newImgCont.setAttribute('class', 'jumbotron bg-info zoomed');
-   newImgCont.append(imgEl);
+   newImgCont.setAttribute('class', 'jumbotron bg-light zoomed');
+  //  newImgCont.append(imgEl);
    newImgCont.onclick = () => closeZoomedImg(currentDivId);
+   document.getElementById('imgContainer').innerHTML = '';
    document.getElementById('imgContainer').append(newImgCont);
-  //  document.body.append(newImgCont);
-  //  console.log(img.src);
+  }
+
+  function createModal(data){
+    const { content, title } = data; //content must be an array with valid html elements. They will be put directly in the content of the modal div.
+    let modalDiv = document.createElement('div');
+    modalDiv.setAttribute('class', 'modal');
+    modalDiv.setAttribute('tabindex', '-1');
+    modalDiv.setAttribute('role', 'dialog');
+
+    let modalDialogDiv = document.createElement('div');
+    modalDialogDiv.setAttribute('class', 'modal-dialog');
+    modalDialogDiv.setAttribute('role', 'document');
+
+    let modalContentDiv = document.createElement('div');
+    modalContentDiv.setAttribute('class', 'modal-content');
+
+    let modalHeader = document.createElement('div');
+    modalHeader.setAttribute('class', 'modal-header');
+    let header = document.createElement('h5');
+    header.setAttribute('class', 'modal-title');
+    header.innerText = title;
+    modalHeader.append(header);
+    let headerCloseBtn = document.createElement('button');
+    headerCloseBtn.setAttribute('type', 'button');
+    headerCloseBtn.setAttribute('class', 'close');
+    headerCloseBtn.setAttribute('data-dismiss', 'modal');
+    headerCloseBtn.setAttribute('aria-label', 'Close');
+    let headerBtnSpan = document.createElement('span');
+    headerBtnSpan.setAttribute('aria-hidden', 'true');
+    headerBtnSpan.innerHTML = '&times';
+    headerCloseBtn.append(headerBtnSpan);
+    modalHeader.append(headerCloseBtn);
+
+
+    let modalBody = document.createElement('div');
+    modalBody.setAttribute('class', 'modal-body');
+    for(let element of content){
+      modalBody.append(element);
+    }
+
+
+    let modalFooter = document.createElement('div');
+    modalFooter.setAttribute('class','modal-footer');
+    // let footerBtnSave = document.createElement('button');
+    // footerBtnSave.setAttribute('type', 'button');
+    // footerBtnSave.setAttribute('class', 'btn btn-primary');
+    // footerBtnSave.innerText = 'Save Changes';
+    // modalFooter.append(footerBtnSave);
+    let footerCloseBtn = document.createElement('button');
+    footerCloseBtn.setAttribute('type', 'button');
+    footerCloseBtn.setAttribute('class', 'btn btn-secondary');
+    footerCloseBtn.setAttribute('data-dismiss', 'modal');
+    footerCloseBtn.innerText = 'Close';
+    modalFooter.append(footerCloseBtn);
+
+    modalContentDiv.append(modalHeader, modalBody, modalFooter);
+    modalDialogDiv.append(modalContentDiv);
+    modalDiv.append(modalDialogDiv);
+    return modalDiv;
   }
 
   function closeZoomedImg(currentDivId){
