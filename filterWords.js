@@ -343,9 +343,6 @@ function filterWords () {
    let imgEl = createImgEl(imgLink, {heightPercent: 60, widthPercent: 60});
    newImgCont = createModal({content: [imgEl] , title: 'Zoomed Image'});
 
-   
-
-
   //  newImgCont.style.position = 'absolute';
   //  newImgCont.style.marginTop = '-50%';
   //  newImgCont.style.zIndex = '999';
@@ -355,6 +352,11 @@ function filterWords () {
    newImgCont.onclick = () => closeZoomedImg(currentDivId);
    document.getElementById('imgContainer').innerHTML = '';
    document.getElementById('imgContainer').append(newImgCont);
+
+   $(".modal-dialog").draggable({
+    handle: ".modal-header, .modal-body, .modal-footer"
+    });
+
   }
 
   function createModal(data){
