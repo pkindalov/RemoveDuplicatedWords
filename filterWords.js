@@ -5,7 +5,10 @@ that.latestDeletedWords = [];
 
 function filterWords () {
     let nonFilteredWords = getUserText();
-    if(!checkUserInput(nonFilteredWords)) return;
+    if(!checkUserInput(nonFilteredWords)){
+      notification({'msg': 'Missing or too short words', 'cls': 'bg bg-warning'});
+      return;
+    }
     let counterInput = document.getElementById('wordsCounter');
     let btnAddWords = document.getElementById('btnAddWords');
     that.allWords = getWords(nonFilteredWords);
@@ -21,7 +24,6 @@ function filterWords () {
   function checkUserInput(input){
     const MIN_INPUT_LENGTH = 2;
     if(!input || input.length < MIN_INPUT_LENGTH){
-      notification({'msg': 'Missing or too short words', 'cls': 'bg bg-warning'});
       return false;
     }
     return true;
@@ -47,7 +49,7 @@ function filterWords () {
     return fillSet();
   }
 
-  function fillSet(wordsArr){
+  function fillSet(){
     let wordsSet = new Set();
     for(let word of that.allWords){
       wordsSet.add(word);
@@ -67,6 +69,51 @@ function filterWords () {
   function resetResultField(){
     let divCont = document.getElementById('result');
     divCont.innerHTML = '';
+  }
+
+  function createTagEl(word){
+    let colorOfTag = getRndColorClass();
+    let className = 'btn btn-' + colorOfTag;
+    let element = createFullElement({'type': 'a', 'propsObj': {'href':'#', 'class': className}, 'innerText': word, 'innerHTML': '', 'htmls': '' });
+    addStyleProps({'el': element, 'styles': {'marginLeft': '10px', 'marginRight': '10px', 'marginBottom': '10px'}});
+    element.onclick = () => removeCurrentWord(word);
+    return element;
+  }
+
+  function getRndColorClass(){
+    let bootstrapColorsClassess = [
+      'primary', 'secondary', 'success', 'danger', 'warning', 'info'
+    ];
+    let min = 0;
+    let max = bootstrapColorsClassess.length;
+    return bootstrapColorsClassess[Math.floor(Math.random() * (max - min) + min)];
+
+  }
+
+  function createFullElement(elementInfo){
+    let {type, propsObj, innerText, innerHTML, htmls} = elementInfo;
+    let element = document.createElement(type);
+    for(let prop of Object.keys(propsObj)){
+      element.setAttribute(prop, propsObj[prop]);
+    }
+    if(innerHTML) element.innerHTML = innerHTML;
+    if(innerText) element.innerText = innerText;
+    if(htmls){
+      for(let el of htmls){
+        element.append(el);
+      }
+    }
+    return element;
+  }
+
+  function addStyleProps(data){
+    let {el, styles} = data;
+    if(!el){
+      throw new Error('Not valid html element');
+    }
+    for(let rule of Object.keys(styles)){
+      el.style[rule] = styles[rule];
+    }
   }
 
   function writeWordsCount(){
@@ -94,31 +141,6 @@ function filterWords () {
       return;  
     }
     el.classList.add('invisible');
-  }
-
-  function createTagEl(word){
-    let element = document.createElement('a');
-    let colorOfTag = getRndColorClass();
-    let className = 'btn btn-' + colorOfTag;
-    element.setAttribute('href', '#');
-    element.setAttribute('class', className);
-    // element.setAttribute('style', 'margin-left: 10px');
-    element.style.marginLeft = '10px';
-    element.style.marginRight = '10px';
-    element.style.marginBottom = '10px';
-    element.innerText = word;
-    element.onclick = () => removeCurrentWord(word);
-    return element;
-  }
-
-  function getRndColorClass(){
-    let bootstrapColorsClassess = [
-      'primary', 'secondary', 'success', 'danger', 'warning', 'info'
-    ];
-    let min = 0;
-    let max = bootstrapColorsClassess.length;
-    return bootstrapColorsClassess[Math.floor(Math.random() * (max - min) + min)];
-
   }
 
   function removeCurrentWord(word){
@@ -408,31 +430,6 @@ function filterWords () {
     return modalDiv;
   }
 
-  function createFullElement(elementInfo){
-    let {type, propsObj, innerText, innerHTML, htmls} = elementInfo;
-    let element = document.createElement(type);
-    for(let prop of Object.keys(propsObj)){
-      element.setAttribute(prop, propsObj[prop]);
-    }
-    if(innerHTML) element.innerHTML = innerHTML;
-    if(innerText) element.innerText = innerText;
-    if(htmls){
-      for(let el of htmls){
-        element.append(el);
-      }
-    }
-    return element;
-  }
-
-  function addStyleProps(data){
-    let {el, styles} = data;
-    if(!el){
-      throw new Error('Not valid html element');
-    }
-    for(let rule of Object.keys(styles)){
-      el.style[rule] = styles[rule];
-    }
-  }
 
 
   function closeZoomedImg(currentDivId){
