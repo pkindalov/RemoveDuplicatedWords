@@ -5,10 +5,7 @@ that.latestDeletedWords = [];
 
 function filterWords () {
     let nonFilteredWords = getUserText();
-    if(!nonFilteredWords || nonFilteredWords.length < 2){
-      notification({'msg': 'Missing or too short words', 'cls': 'bg bg-warning'});
-      return;
-    }
+    if(!checkUserInput(nonFilteredWords)) return;
     let counterInput = document.getElementById('wordsCounter');
     let btnAddWords = document.getElementById('btnAddWords');
     that.allWords = getWords(nonFilteredWords);
@@ -19,6 +16,15 @@ function filterWords () {
     showHideElement(counterInput, that.allWords.length > 0);
     showHideElement(btnAddWords, true);
     showCopyWordsBtn();
+  }
+
+  function checkUserInput(input){
+    const MIN_INPUT_LENGTH = 2;
+    if(!input || input.length < MIN_INPUT_LENGTH){
+      notification({'msg': 'Missing or too short words', 'cls': 'bg bg-warning'});
+      return false;
+    }
+    return true;
   }
 
   function getUserText(){
@@ -51,11 +57,16 @@ function filterWords () {
 
   function fillResultDiv(){
     let divCont = document.getElementById('result');
-    divCont.innerHTML = '';
+    resetResultField();
     for(let word of that.allWords){
       let el = createTagEl(word);
       divCont.append(el);
     }
+  }
+
+  function resetResultField(){
+    let divCont = document.getElementById('result');
+    divCont.innerHTML = '';
   }
 
   function writeWordsCount(){
@@ -152,9 +163,6 @@ function filterWords () {
     let lastElPosition = that.originalWords.indexOf(lastElement);
     if(lastElement && lastElPosition !== -1){
       that.latestDeletedWords.splice(that.latestDeletedWords.length - 1, 1);
-      if(lastElPosition > 0 && lastElPosition !== that.allWords.length){
-        lastElPosition--;
-      }
       that.allWords.splice(lastElPosition, 0, lastElement);
     }
     let counterInput = document.getElementById('wordsCounter');
@@ -165,6 +173,7 @@ function filterWords () {
     showHideElement(counterInput, that.allWords.length > 0);
     showHideElement(undoBtn, that.latestDeletedWords.length > 0);
     showCopyWordsBtn();
+    notification({'msg': 'Deleted word returned successfully', 'cls': 'bg bg-info'});
   }
 
   function showHideAddWordsForm(){
