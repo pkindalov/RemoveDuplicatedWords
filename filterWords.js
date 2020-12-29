@@ -5,6 +5,10 @@ that.latestDeletedWords = [];
 
 function filterWords () {
     let nonFilteredWords = getUserText();
+    if(!nonFilteredWords || nonFilteredWords.length < 2){
+      notification({'msg': 'Missing or too short words', 'cls': 'bg bg-warning'});
+      return;
+    }
     let counterInput = document.getElementById('wordsCounter');
     let btnAddWords = document.getElementById('btnAddWords');
     that.allWords = getWords(nonFilteredWords);
@@ -140,6 +144,7 @@ function filterWords () {
     el.select();
     document.execCommand('copy');
     document.body.removeChild(el);
+    notification({'msg': 'Words Copied Successfully', 'cls': 'bg bg-success'});
   }
 
   function undoDelete(){
@@ -205,6 +210,7 @@ function filterWords () {
     try {
       addStyleProps({'el': notifDiv, 'styles': {'padding': '1% 0 1% 0', 'textAlign': 'center', 'fontWeight': 'bold'}});
       document.body.prepend(notifDiv);
+      notifDiv.onclick =  () =>  document.body.removeChild(notifDiv);
       removeElAfter({'el': notifDiv, 'sec': 4000});
     } catch (err) {
       console.log(err);
@@ -214,10 +220,12 @@ function filterWords () {
   function removeElAfter(data){
     let {el, sec} = data;
     if(!el){
-      throw new Error('Invalid element');
+      return;
     }
     setTimeout(() => {
-      document.body.removeChild(el);
+      if(document.body.contains(el)){
+        document.body.removeChild(el);
+      }
     }, sec);
   }
 
