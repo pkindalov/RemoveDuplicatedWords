@@ -223,10 +223,7 @@ function filterWords () {
     readBrowseImg(this);
   });
 
-
   that.imgInputCont.addEventListener('keypress', function(e){
-  // let urlFromClipboart = getImageFromClipboard();  
-  // return;
   let imgURL = e.target.value;
     
     if(!imgURL || imgURL.indexOf('http') < 0){
@@ -245,7 +242,6 @@ function filterWords () {
   });
 
    function putImageFromClipboard(){
-    // let url;
     navigator.clipboard.readText()
     .then(text => {
       if(text.indexOf('.jpg') !== -1 || text.indexOf('.png') !== -1){
@@ -263,15 +259,12 @@ function filterWords () {
     .catch(err => {
       console.error('Failed to read clipboard contents: ', err);
     });
-   
-
   }
 
   function reverseStr(str){
     str = str.split("").reverse().join("");
     return str;
   }
-
 
   function showImgByURL(url){
     that.imgCountId++;
@@ -287,26 +280,18 @@ function filterWords () {
     imgBtnCont.append(imgEl);
     imgBtnCont.append(closeBtn);
     imgBtnCont.append(zoomInBtn);
-    // clearImageDivContainer();85555
     that.imgDivCont = !that.imgDivCont ? document.getElementById('imgContainer') : that.imgDivCont;
     that.imgDivCont.append(imgBtnCont);
-    // that.imgDivCont.innerHTML = '';
-    // that.imgDivCont.append(imgEl);
-    // that.imgDivCont.append(closeBtn);
   }
 
   function createImgEl(url, data){
     let {heightPercent, widthPercent} = data;
     let img = document.createElement('img');
-    // that.imgCountId++;
     img.setAttribute('src', url);
     img.setAttribute('alt', 'keyworded image');
     img.setAttribute('class', 'img-fluid mt-3');
-    // img.setAttribute('id', 'image' + that.imgCountId);
     img.style.height = (that.imgHeightPercent + heightPercent) + '%';
     img.style.width = (that.imgWidthPercent + widthPercent) + '%';
-    // img.style.height = (1200 * 0.5) + 'px';
-    // img.style.width = (1200 * 0.5) + 'px';
     return img;
   }
 
@@ -342,90 +327,40 @@ function filterWords () {
    let newImgCont = document.createElement('div');
    let imgEl = createImgEl(imgLink, {heightPercent: 60, widthPercent: 60});
    newImgCont = createModal({content: [imgEl] , title: 'Zoomed Image'});
-
-  //  newImgCont.style.position = 'absolute';
-  //  newImgCont.style.marginTop = '-50%';
-  //  newImgCont.style.zIndex = '999';
    newImgCont.setAttribute('id', 'zoomedImg' + currentDivId);
    newImgCont.setAttribute('class', 'jumbotron bg-light zoomed');
-  //  newImgCont.append(imgEl);
    newImgCont.onclick = () => closeZoomedImg(currentDivId);
    document.getElementById('imgContainer').innerHTML = '';
    document.getElementById('imgContainer').append(newImgCont);
+    makeModalDraggable();
+  }
 
-   $(".modal-dialog").draggable({
-    handle: ".modal-header, .modal-body, .modal-footer"
-    });
-
+  function makeModalDraggable(){
+    $(".modal-dialog").draggable({
+      handle: ".modal-header, .modal-body, .modal-footer"
+      });
   }
 
   function createModal(data){
     const { content, title } = data; //content must be an array with valid html elements. They will be put directly in the content of the modal div.
-    // let modalDiv = document.createElement('div');
-    // modalDiv.setAttribute('class', 'modal');
-    // modalDiv.setAttribute('tabindex', '-1');
-    // modalDiv.setAttribute('role', 'dialog');
-
     let modalDiv = createFullElement({'type': 'div', 'propsObj': {'class' : ',modal', 'tabindex' : '-1', 'role' : 'dialog'}, 'innerText': '', 'innerHTML': '' });
-
-    // let modalDialogDiv = document.createElement('div');
-    // modalDialogDiv.setAttribute('class', 'modal-dialog');
-    // modalDialogDiv.setAttribute('role', 'document');
     let modalDialogDiv = createFullElement({'type': 'div', 'propsObj': {'class': 'modal-dialog', 'role': 'document'}, 'innerText': '', 'innerHTML': '' });
-    // let modalContentDiv = document.createElement('div');
-    // modalContentDiv.setAttribute('class', 'modal-content');
     let modalContentDiv = createFullElement({'type': 'div', 'propsObj': {'class': 'modal-content'}, 'innerText': '', 'innerHTML': '' });
-
-    // let modalHeader = document.createElement('div');
-    // modalHeader.setAttribute('class', 'modal-header');
     let modalHeader = createFullElement({'type': 'div', 'propsObj': {'class': 'modal-header'}, 'innerText': '', 'innerHTML': '' });
-
-    // let header = document.createElement('h5');
-    // header.setAttribute('class', 'modal-title');
-    // header.innerText = title;
     let header = createFullElement({'type': 'h5', 'propsObj': {'class': 'modal-title'}, 'innerText': title, 'innerHTML': '' });
+
     modalHeader.append(header);
 
-
-    // let headerCloseBtn = document.createElement('button');
-    // headerCloseBtn.setAttribute('type', 'button');
-    // headerCloseBtn.setAttribute('class', 'close');
-    // headerCloseBtn.setAttribute('data-dismiss', 'modal');
-    // headerCloseBtn.setAttribute('aria-label', 'Close');
     let headerCloseBtn = createFullElement({'type': 'button', 'propsObj': {'type': 'button', 'class' : 'close', 'data-dismiss' : 'modal', 'aria-label': 'Close'}, 'innerText': '', 'innerHTML': '' });
-
-
-    // let headerBtnSpan = document.createElement('span');
-    // headerBtnSpan.setAttribute('aria-hidden', 'true');
-    // headerBtnSpan.innerHTML = '&times';
     let headerBtnSpan = createFullElement({'type': 'span', 'propsObj': {'aria-hidden': 'true'}, 'innerText': '', 'innerHTML': '&times;' });
 
     headerCloseBtn.append(headerBtnSpan);
     modalHeader.append(headerCloseBtn);
 
-
-    // let modalBody = document.createElement('div');
-    // modalBody.setAttribute('class', 'modal-body');
-    let modalBody = createFullElement({'type': 'div', 'propsObj': {'class': 'modal-body'}, 'innerText': '', 'innerHTML': '' })
-    for(let element of content){
-      modalBody.append(element);
-    }
-
-
-    let modalFooter = document.createElement('div');
-    modalFooter.setAttribute('class','modal-footer');
-    // let footerBtnSave = document.createElement('button');
-    // footerBtnSave.setAttribute('type', 'button');
-    // footerBtnSave.setAttribute('class', 'btn btn-primary');
-    // footerBtnSave.innerText = 'Save Changes';
-    // modalFooter.append(footerBtnSave);
-
-    // let footerCloseBtn = document.createElement('button');
-    // footerCloseBtn.setAttribute('type', 'button');
-    // footerCloseBtn.setAttribute('class', 'btn btn-secondary');
-    // footerCloseBtn.setAttribute('data-dismiss', 'modal');
-    // footerCloseBtn.innerText = 'Close';
+    let modalBody = createFullElement({'type': 'div', 'propsObj': {'class': 'modal-body'}, 'innerText': '', 'innerHTML': '', 'htmls': content });
+    let modalFooter = createFullElement({'type': 'div', 'propsObj': {'class': 'modal-footer'}});
     let footerCloseBtn = createFullElement({'type': 'button', 'propsObj': {'type': 'button', 'class': 'btn btn-secondary', 'data-dismiss': 'modal'}, 'innerText': 'Close', 'innerHTML': '' });
+
     modalFooter.append(footerCloseBtn);
     modalContentDiv.append(modalHeader, modalBody, modalFooter);
     modalDialogDiv.append(modalContentDiv);
@@ -434,13 +369,18 @@ function filterWords () {
   }
 
   function createFullElement(elementInfo){
-    let {type, propsObj, innerText, innerHTML} = elementInfo;
+    let {type, propsObj, innerText, innerHTML, htmls} = elementInfo;
     let element = document.createElement(type);
     for(let prop of Object.keys(propsObj)){
       element.setAttribute(prop, propsObj[prop]);
     }
     if(innerHTML) element.innerHTML = innerHTML;
     if(innerText) element.innerText = innerText;
+    if(htmls){
+      for(let el of htmls){
+        element.append(el);
+      }
+    }
     return element;
   }
 
