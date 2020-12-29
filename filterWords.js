@@ -361,38 +361,52 @@ function filterWords () {
 
   function createModal(data){
     const { content, title } = data; //content must be an array with valid html elements. They will be put directly in the content of the modal div.
-    let modalDiv = document.createElement('div');
-    modalDiv.setAttribute('class', 'modal');
-    modalDiv.setAttribute('tabindex', '-1');
-    modalDiv.setAttribute('role', 'dialog');
+    // let modalDiv = document.createElement('div');
+    // modalDiv.setAttribute('class', 'modal');
+    // modalDiv.setAttribute('tabindex', '-1');
+    // modalDiv.setAttribute('role', 'dialog');
 
-    let modalDialogDiv = document.createElement('div');
-    modalDialogDiv.setAttribute('class', 'modal-dialog');
-    modalDialogDiv.setAttribute('role', 'document');
+    let modalDiv = createFullElement({'type': 'div', 'propsObj': {'class' : ',modal', 'tabindex' : '-1', 'role' : 'dialog'}, 'innerText': '', 'innerHTML': '' });
 
-    let modalContentDiv = document.createElement('div');
-    modalContentDiv.setAttribute('class', 'modal-content');
+    // let modalDialogDiv = document.createElement('div');
+    // modalDialogDiv.setAttribute('class', 'modal-dialog');
+    // modalDialogDiv.setAttribute('role', 'document');
+    let modalDialogDiv = createFullElement({'type': 'div', 'propsObj': {'class': 'modal-dialog', 'role': 'document'}, 'innerText': '', 'innerHTML': '' });
+    // let modalContentDiv = document.createElement('div');
+    // modalContentDiv.setAttribute('class', 'modal-content');
+    let modalContentDiv = createFullElement({'type': 'div', 'propsObj': {'class': 'modal-content'}, 'innerText': '', 'innerHTML': '' });
 
-    let modalHeader = document.createElement('div');
-    modalHeader.setAttribute('class', 'modal-header');
-    let header = document.createElement('h5');
-    header.setAttribute('class', 'modal-title');
-    header.innerText = title;
+    // let modalHeader = document.createElement('div');
+    // modalHeader.setAttribute('class', 'modal-header');
+    let modalHeader = createFullElement({'type': 'div', 'propsObj': {'class': 'modal-header'}, 'innerText': '', 'innerHTML': '' });
+
+    // let header = document.createElement('h5');
+    // header.setAttribute('class', 'modal-title');
+    // header.innerText = title;
+    let header = createFullElement({'type': 'h5', 'propsObj': {'class': 'modal-title'}, 'innerText': title, 'innerHTML': '' });
     modalHeader.append(header);
-    let headerCloseBtn = document.createElement('button');
-    headerCloseBtn.setAttribute('type', 'button');
-    headerCloseBtn.setAttribute('class', 'close');
-    headerCloseBtn.setAttribute('data-dismiss', 'modal');
-    headerCloseBtn.setAttribute('aria-label', 'Close');
-    let headerBtnSpan = document.createElement('span');
-    headerBtnSpan.setAttribute('aria-hidden', 'true');
-    headerBtnSpan.innerHTML = '&times';
+
+
+    // let headerCloseBtn = document.createElement('button');
+    // headerCloseBtn.setAttribute('type', 'button');
+    // headerCloseBtn.setAttribute('class', 'close');
+    // headerCloseBtn.setAttribute('data-dismiss', 'modal');
+    // headerCloseBtn.setAttribute('aria-label', 'Close');
+    let headerCloseBtn = createFullElement({'type': 'button', 'propsObj': {'type': 'button', 'class' : 'close', 'data-dismiss' : 'modal', 'aria-label': 'Close'}, 'innerText': '', 'innerHTML': '' });
+
+
+    // let headerBtnSpan = document.createElement('span');
+    // headerBtnSpan.setAttribute('aria-hidden', 'true');
+    // headerBtnSpan.innerHTML = '&times';
+    let headerBtnSpan = createFullElement({'type': 'span', 'propsObj': {'aria-hidden': 'true'}, 'innerText': '', 'innerHTML': '&times;' });
+
     headerCloseBtn.append(headerBtnSpan);
     modalHeader.append(headerCloseBtn);
 
 
-    let modalBody = document.createElement('div');
-    modalBody.setAttribute('class', 'modal-body');
+    // let modalBody = document.createElement('div');
+    // modalBody.setAttribute('class', 'modal-body');
+    let modalBody = createFullElement({'type': 'div', 'propsObj': {'class': 'modal-body'}, 'innerText': '', 'innerHTML': '' })
     for(let element of content){
       modalBody.append(element);
     }
@@ -405,18 +419,31 @@ function filterWords () {
     // footerBtnSave.setAttribute('class', 'btn btn-primary');
     // footerBtnSave.innerText = 'Save Changes';
     // modalFooter.append(footerBtnSave);
-    let footerCloseBtn = document.createElement('button');
-    footerCloseBtn.setAttribute('type', 'button');
-    footerCloseBtn.setAttribute('class', 'btn btn-secondary');
-    footerCloseBtn.setAttribute('data-dismiss', 'modal');
-    footerCloseBtn.innerText = 'Close';
-    modalFooter.append(footerCloseBtn);
 
+    // let footerCloseBtn = document.createElement('button');
+    // footerCloseBtn.setAttribute('type', 'button');
+    // footerCloseBtn.setAttribute('class', 'btn btn-secondary');
+    // footerCloseBtn.setAttribute('data-dismiss', 'modal');
+    // footerCloseBtn.innerText = 'Close';
+    let footerCloseBtn = createFullElement({'type': 'button', 'propsObj': {'type': 'button', 'class': 'btn btn-secondary', 'data-dismiss': 'modal'}, 'innerText': 'Close', 'innerHTML': '' });
+    modalFooter.append(footerCloseBtn);
     modalContentDiv.append(modalHeader, modalBody, modalFooter);
     modalDialogDiv.append(modalContentDiv);
     modalDiv.append(modalDialogDiv);
     return modalDiv;
   }
+
+  function createFullElement(elementInfo){
+    let {type, propsObj, innerText, innerHTML} = elementInfo;
+    let element = document.createElement(type);
+    for(let prop of Object.keys(propsObj)){
+      element.setAttribute(prop, propsObj[prop]);
+    }
+    if(innerHTML) element.innerHTML = innerHTML;
+    if(innerText) element.innerText = innerText;
+    return element;
+  }
+
 
   function closeZoomedImg(currentDivId){
     document.getElementById('zoomedImg' + currentDivId).remove();
