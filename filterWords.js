@@ -2,6 +2,15 @@ let that = this;
 that.allWords = [];
 that.originalWords = [];
 that.latestDeletedWords = [];
+that.imgInputCont = document.getElementById('imgInput');
+that.imgDivCont = document.getElementById('imgContainer');
+that.imgBrowseCont = document.getElementById('browseImg');
+that.imgHeightPercent = 40;
+that.imgWidthPercent = 40;
+that.imgCountId = 0;
+that.errors = {
+  invalidURL: 'Invalid Input. Please enter a valid URL'
+};
 
 function filterWords () {
     let nonFilteredWords = getUserText();
@@ -142,14 +151,6 @@ function filterWords () {
     delete wordsObj[word];
     that.allWords = Object.keys(wordsObj);
     that.latestDeletedWords.push(word);
-    //old way to remove words from array
-    // that.allWords = Array.from(wordsObj);
-    // let index  = that.allWords.indexOf(word);
-    // if(index === -1){
-    //   alert('No such word');
-    //   return;
-    // }
-    // that.allWords.splice(index, 1);
     let counterInput = document.getElementById('wordsCounter');
     let undoBtn = document.getElementById('btnUndoDeleteWord');
     filteringAllWords();
@@ -220,8 +221,8 @@ function filterWords () {
   function addNewWord(){
     let wordCont = document.getElementById('addWordInput');
     let newWord = wordCont.value;
-    if(!newWord){
-      wordCont.value = 'Invalid word';
+    if(!checkUserInput(newWord)){
+      notification({'msg': 'Missing or too short word', 'cls': 'bg bg-warning'});
       return;
     }
     that.allWords.push(newWord);
@@ -246,12 +247,20 @@ function filterWords () {
     let notifDiv = createFullElement({'type': 'div', 'propsObj': {'class': cls}, 'innerText': msg, 'innerHTML': '', 'htmls': ''});
     try {
       addStyleProps({'el': notifDiv, 'styles': {'padding': '1% 0 1% 0', 'textAlign': 'center', 'fontWeight': 'bold'}});
-      document.body.prepend(notifDiv);
-      notifDiv.onclick =  () =>  document.body.removeChild(notifDiv);
+      prependElToDoc(notifDiv);
+      notifDiv.onclick =  () =>  removeElFromDoc(notifDiv);
       removeElAfter({'el': notifDiv, 'sec': 4000});
     } catch (err) {
       console.log(err);
     }
+  }
+
+  function prependElToDoc(el){
+    document.body.prepend(el);
+  }
+
+  function removeElFromDoc(el){
+    document.body.removeChild(el);
   }
 
   function removeElAfter(data){
@@ -260,10 +269,14 @@ function filterWords () {
       return;
     }
     setTimeout(() => {
-      if(document.body.contains(el)){
-        document.body.removeChild(el);
+      if(isDocBodyContainsEl(el)){
+        removeElFromDoc(el);
       }
     }, sec);
+  }
+
+  function isDocBodyContainsEl(el){
+    return document.body.contains(el);
   }
 
 
@@ -271,45 +284,20 @@ function filterWords () {
   //Image view functionalities
   //----------------------------------------------------------------------------------------------------------------------------------
 
-  that.imgInputCont = document.getElementById('imgInput');
-  that.imgDivCont = document.getElementById('imgContainer');
-  that.imgBrowseCont = document.getElementById('browseImg');
-  that.imgHeightPercent = 40;
-  that.imgWidthPercent = 40;
-  that.imgCountId = 0;
-  that.errors = {
-    invalidURL: 'Invalid Input. Please enter a valid URL'
-  };
 
   that.imgInputCont.addEventListener('focus', function(e){
-      if(that.imgDivCont && that.imgDivCont.children.length < 1){
+      if(isImgContValid()){
         putImageFromClipboard();
       }
   });
 
-  that.imgBrowseCont.addEventListener('change', function(){
-    readBrowseImg(this);
-  });
+  function isImgContValid(){
+    // const MIN_CHILDREN_COUNT = 1;
+    // return that.imgDivCont && that.imgDivCont.children.length < MIN_CHILDREN_COUNT;
+    return that.imgDivCont ? true : false;
+  }
 
-  that.imgInputCont.addEventListener('keypress', function(e){
-  let imgURL = e.target.value;
-    
-    if(!imgURL || imgURL.indexOf('http') < 0){
-      alert('Invalid Input. Please enter a valid URL');
-      return;
-    }
-
-    switch (e.key.toLowerCase()) {
-      case 'enter':
-        showImgByURL(imgURL);
-        break;
-    
-      default:
-        break;
-    }
-  });
-
-   function putImageFromClipboard(){
+  function putImageFromClipboard(){
     navigator.clipboard.readText()
     .then(text => {
       if(text.indexOf('.jpg') !== -1 || text.indexOf('.png') !== -1){
@@ -388,26 +376,63 @@ function filterWords () {
   }
 
   function zoomInImg(currentDivId){
-   let div = document.getElementById('image' + currentDivId);
-   if(!div) return;
-   let img = div.children[0];
-   let imgLink = img.src;
-   let newImgCont = document.createElement('div');
-   let imgEl = createImgEl(imgLink, {heightPercent: 60, widthPercent: 60});
-   newImgCont = createModal({content: [imgEl] , title: 'Zoomed Image'});
-   newImgCont.setAttribute('id', 'zoomedImg' + currentDivId);
-   newImgCont.setAttribute('class', 'jumbotron bg-light zoomed');
-   newImgCont.onclick = () => closeZoomedImg(currentDivId);
-   document.getElementById('imgContainer').innerHTML = '';
-   document.getElementById('imgContainer').append(newImgCont);
-    makeModalDraggable();
-  }
+    let div = document.getElementById('image' + currentDivId);
+    if(!div) return;
+    let img = div.children[0];
+    let imgLink = img.src;
+    let newImgCont = document.createElement('div');
+    let imgEl = createImgEl(imgLink, {heightPercent: 60, widthPercent: 60});
+    newImgCont = createModal({content: [imgEl] , title: 'Zoomed Image'});
+    newImgCont.setAttribute('id', 'zoomedImg' + currentDivId);
+    newImgCont.setAttribute('class', 'jumbotron bg-light zoomed');
+    newImgCont.onclick = () => closeZoomedImg(currentDivId);
+    document.getElementById('imgContainer').innerHTML = '';
+    document.getElementById('imgContainer').append(newImgCont);
+     makeModalDraggable();
+   }
+ 
+   function makeModalDraggable(){
+     $(".modal-dialog").draggable({
+       handle: ".modal-header, .modal-body, .modal-footer"
+       });
+   }
 
-  function makeModalDraggable(){
-    $(".modal-dialog").draggable({
-      handle: ".modal-header, .modal-body, .modal-footer"
-      });
-  }
+
+
+
+
+   
+
+
+  that.imgBrowseCont.addEventListener('change', function(){
+    readBrowseImg(this);
+  });
+
+  that.imgInputCont.addEventListener('keypress', function(e){
+  let imgURL = e.target.value;
+    
+    if(!imgURL || imgURL.indexOf('http') < 0){
+      alert('Invalid Input. Please enter a valid URL');
+      return;
+    }
+
+    switch (e.key.toLowerCase()) {
+      case 'enter':
+        showImgByURL(imgURL);
+        break;
+    
+      default:
+        break;
+    }
+  });
+
+  
+
+
+
+
+
+  
 
   function createModal(data){
     const { content, title } = data; //content must be an array with valid html elements. They will be put directly in the content of the modal div.
