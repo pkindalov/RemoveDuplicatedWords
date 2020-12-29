@@ -121,18 +121,6 @@ function filterWords () {
     container.value = that.allWords.length;
   }
 
-  function showCopyWordsBtn(){
-    let btn = document.getElementById('btnCopyWords');
-    // if(that.allWords.length > 0){
-      showHideElement(btn, that.allWords.length > 0);
-      // return;
-      // console.log(btn.classList);
-      // console.log(typeof btn.classList);
-    // }
-
-    // btn.classList.add('invisible');
-  }
-
   function showHideElement(el, condition){
     if(condition){
         if(el.classList.contains('invisible')){
@@ -143,6 +131,12 @@ function filterWords () {
     el.classList.add('invisible');
   }
 
+  function showCopyWordsBtn(){
+    let btn = document.getElementById('btnCopyWords');
+    showHideElement(btn, that.allWords.length > 0);
+  }
+
+  
   function removeCurrentWord(word){
     let wordsObj = convertArrayToObj(that.allWords);
     delete wordsObj[word];
@@ -204,11 +198,23 @@ function filterWords () {
 
   function showHideContainer(container){
     let addWordsCont = document.getElementById(container);
-    if(addWordsCont.classList.contains('invisible')){
-      addWordsCont.classList.remove('invisible');
+    if(isInvisible()){
+      makeElVisible(addWordsCont);
       return;
     }
-    addWordsCont.classList.add('invisible');
+    makeElInvisible(addWordsCont);
+  }
+
+  function isInvisible(){
+    return addWordsCont.classList.contains('invisible');
+  }
+
+  function makeElVisible(el){
+    el.classList.remove('invisible');
+  }
+
+  function makeElInvisible(el){
+    el.classList.add('invisible');
   }
 
   function addNewWord(){
