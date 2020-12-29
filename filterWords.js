@@ -186,6 +186,7 @@ function filterWords () {
     that.originalWords.push(newWord);
     let counterInput = document.getElementById('wordsCounter');
     let undoBtn = document.getElementById('btnUndoDeleteWord');
+    notification({'msg': 'Word Added Successfully', 'cls': 'bg bg-success'});
     filteringAllWords();
     fillResultDiv();
     writeWordsCount();
@@ -196,6 +197,28 @@ function filterWords () {
 
   function resetWords(){
     document.getElementById('nonFilteredWords').value = '';
+  }
+
+  function notification(data){
+    let {msg, cls} = data;
+    let notifDiv = createFullElement({'type': 'div', 'propsObj': {'class': cls}, 'innerText': msg, 'innerHTML': '', 'htmls': ''});
+    try {
+      addStyleProps({'el': notifDiv, 'styles': {'padding': '1% 0 1% 0', 'textAlign': 'center', 'fontWeight': 'bold'}});
+      document.body.prepend(notifDiv);
+      removeElAfter({'el': notifDiv, 'sec': 4000});
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  function removeElAfter(data){
+    let {el, sec} = data;
+    if(!el){
+      throw new Error('Invalid element');
+    }
+    setTimeout(() => {
+      document.body.removeChild(el);
+    }, sec);
   }
 
 
@@ -382,6 +405,16 @@ function filterWords () {
       }
     }
     return element;
+  }
+
+  function addStyleProps(data){
+    let {el, styles} = data;
+    if(!el){
+      throw new Error('Not valid html element');
+    }
+    for(let rule of Object.keys(styles)){
+      el.style[rule] = styles[rule];
+    }
   }
 
 
