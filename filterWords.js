@@ -300,15 +300,15 @@ function filterWords () {
   function putImageFromClipboard(){
     navigator.clipboard.readText()
     .then(text => {
-      if(text.indexOf('.jpg') !== -1 || text.indexOf('.png') !== -1){
+      if(isThereImgURL(text)){
         let reversedStr = reverseStr(text);
-        let extension = reversedStr.split('.')[0];
+        let extension = getExtension(reversedStr);
         extension = reverseStr(extension);
         let start = text.indexOf('http');
         let end = text.indexOf(extension);
-         url = text.substr(start, end + (extension.length));
-         showImgByURL(url);
-         return;
+        url = getURL({'text': text, 'start': start, 'end': end});
+        showImgByURL(url);
+        return;
       }
      
     })
@@ -317,9 +317,22 @@ function filterWords () {
     });
   }
 
+  function isThereImgURL(text){
+    return text.indexOf('.jpg') !== -1 || text.indexOf('.png') !== -1;
+  }
+
   function reverseStr(str){
     str = str.split("").reverse().join("");
     return str;
+  }
+
+  function getExtension(str){
+    return str.split('.')[0];
+  }
+
+  function getURL(data){
+    let {text, start, end } = data;
+    return text.substr(start, end + (extension.length));
   }
 
   function showImgByURL(url){
@@ -401,7 +414,7 @@ function filterWords () {
 
 
 
-   
+
 
 
   that.imgBrowseCont.addEventListener('change', function(){
