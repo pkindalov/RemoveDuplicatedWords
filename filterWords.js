@@ -109,18 +109,36 @@ function getRandomNum(data) {
 
 function createFullElement(elementInfo) {
 	let { type, propsObj, innerText, innerHTML, htmls } = elementInfo;
-	let element = document.createElement(type);
-	for (let prop of Object.keys(propsObj)) {
-		element.setAttribute(prop, propsObj[prop]);
-	}
+  let element = document.createElement(type);
+  if(isValidPropertiesObj(propsObj)){
+    for (let prop of Object.keys(propsObj)) {
+      element.setAttribute(prop, propsObj[prop]);
+    }
+  }
 	if (innerHTML) element.innerHTML = innerHTML;
 	if (innerText) element.innerText = innerText;
 	if (htmls) {
-		for (let el of htmls) {
-			element.append(el);
-		}
+    addHtmlTagsToEl({'el': element, 'htmls': htmls});
+		// for (let el of htmls) {
+		// 	element.append(el);
+		// }
 	}
 	return element;
+}
+
+function isValidPropertiesObj(props){
+  const MIN_ALLOWED_COUNT_PROPERTIES = 1;
+  if(Object.keys(props).length < MIN_ALLOWED_COUNT_PROPERTIES || Object.values(props).length < MIN_ALLOWED_COUNT_PROPERTIES){
+    return false;
+  }
+  return true;
+}
+
+function addHtmlTagsToEl(data){
+  let { el , htmls } = data;
+  for (let htmlEl of htmls) {
+    el.append(htmlEl);
+  }
 }
 
 function addStyleProps(data) {
@@ -173,14 +191,24 @@ function convertArrayToObj(arr) {
 }
 
 function copyWords() {
-	const el = document.createElement('textarea');
+	// const el = document.createElement('textarea');
+	const el = createFullElement({'type': 'textarea', 'propsObj': {}, 'innerText': '', 'innerHTML': '', 'htmls': ''});
 	el.value = that.allWords.join(', ');
-	document.body.appendChild(el);
-	el.select();
-	document.execCommand('copy');
-	document.body.removeChild(el);
+	addElToBody(el);
+	copyToClipboard(el);
+	removeElFromDoc(el);
 	notification({ msg: 'Words Copied Successfully', cls: 'bg bg-success' });
 }
+
+function addElToBody(el){
+  document.body.appendChild(el);
+}
+
+function copyToClipboard(el){
+  el.select();
+	document.execCommand('copy');
+}
+
 
 function undoDelete() {
 	let lastElement = that.latestDeletedWords[that.latestDeletedWords.length - 1];
@@ -318,7 +346,7 @@ function putImageFromClipboard() {
 				extension = reverseStr(extension);
 				let start = text.indexOf('http');
 				let end = text.indexOf(extension);
-				url = getURL({ text: text, start: start, end: end });
+				url = getURL({ 'text': text, 'start': start, 'end': end, 'extension': extension});
 				showImgByURL(url);
 				return;
 			}
@@ -342,7 +370,7 @@ function getExtension(str) {
 }
 
 function getURL(data) {
-	let { text, start, end } = data;
+	let { text, start, end, extension } = data;
 	return text.substr(start, end + extension.length);
 }
 
