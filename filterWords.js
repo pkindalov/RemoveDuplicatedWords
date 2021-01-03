@@ -91,7 +91,17 @@ function createTagEl(word) {
 	});
 	addStyleProps({ el: element, styles: { marginLeft: '10px', marginRight: '10px', marginBottom: '10px' } });
 	element.onclick = () => removeCurrentWord(word);
+	addCtxMenuToEl(element);
 	return element;
+}
+
+function addCtxMenuToEl(el){
+	el.addEventListener('contextmenu', (event) => {
+		event.preventDefault();
+		let clickedWord = event.target.innerText;
+		let successMsg = clickedWord + ' copied successfully';
+		copyWords({'words': [clickedWord], 'msg': successMsg});
+	});
 }
 
 function getRndColorClass() {
@@ -119,9 +129,6 @@ function createFullElement(elementInfo) {
 	if (innerText) element.innerText = innerText;
 	if (htmls) {
     addHtmlTagsToEl({'el': element, 'htmls': htmls});
-		// for (let el of htmls) {
-		// 	element.append(el);
-		// }
 	}
 	return element;
 }
@@ -190,14 +197,25 @@ function convertArrayToObj(arr) {
 	return arr.reduce((a, b) => ((a[b] = b), a), {});
 }
 
-function copyWords() {
+function copyWords(data = '') {
+	let msg =  'Words Copied Successfully';
+	let cls =  'bg bg-success';
+	let words = that.allWords;
+
+	if(data){
+		msg = data.msg ? data.msg : 'Words Copied Successfully';
+		cls = data.cls ? data.cls : 'bg bg-success';
+		words = data.words ? data.words : that.allWords;
+	}
+	// let {words, msg, cls} = data;
 	// const el = document.createElement('textarea');
 	const el = createFullElement({'type': 'textarea', 'propsObj': {}, 'innerText': '', 'innerHTML': '', 'htmls': ''});
-	el.value = that.allWords.join(', ');
+	// el.value = that.allWords.join(', ');
+	el.value = words.join(', ');
 	addElToBody(el);
 	copyToClipboard(el);
 	removeElFromDoc(el);
-	notification({ msg: 'Words Copied Successfully', cls: 'bg bg-success' });
+	notification({ 'msg': msg, 'cls': cls });
 }
 
 function addElToBody(el){
@@ -374,6 +392,8 @@ function getURL(data) {
 	return text.substr(start, end + extension.length);
 }
 
+
+//Continue refactoring from here
 function showImgByURL(url) {
 	that.imgCountId++;
 	let currentDivId = that.imgCountId;
