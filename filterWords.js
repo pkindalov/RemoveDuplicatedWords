@@ -118,7 +118,7 @@ function getRandomNum(data) {
 }
 
 function createFullElement(elementInfo) {
-	let { type, propsObj, innerText, innerHTML, htmls } = elementInfo;
+  let { type, propsObj, innerText, innerHTML, htmls } = elementInfo;
   let element = document.createElement(type);
   if(isValidPropertiesObj(propsObj)){
     for (let prop of Object.keys(propsObj)) {
@@ -400,49 +400,40 @@ function showImgByURL(url) {
 	let imgEl = createImgEl(url, { heightPercent: 0, widthPercent: 0 });
 	let closeBtn = createCloseBtn(currentDivId);
 	let zoomInBtn = createZoomInBtn(currentDivId);
-	let imgBtnCont = document.createElement('div');
-	imgBtnCont.setAttribute('id', 'image' + that.imgCountId);
-	imgBtnCont.setAttribute('class', 'ml-3');
-	imgBtnCont.style.display = 'inline';
+	let imgBtnCont = createFullElement({'type': 'div', 'propsObj': {'id': 'image' + that.imgCountId, 'class': 'ml-3'}});
+	addStyleProps({'el': imgBtnCont, 'styles': {'display': 'inline'}});
 	imgBtnCont.onclick = () => zoomInImg(currentDivId);
-	imgBtnCont.append(imgEl);
-	imgBtnCont.append(closeBtn);
-	imgBtnCont.append(zoomInBtn);
+	imgBtnCont.append(imgEl, closeBtn, zoomInBtn);
 	that.imgDivCont = !that.imgDivCont ? document.getElementById('imgContainer') : that.imgDivCont;
 	that.imgDivCont.append(imgBtnCont);
 }
 
 function createImgEl(url, data) {
 	let { heightPercent, widthPercent } = data;
-	let img = document.createElement('img');
-	img.setAttribute('src', url);
-	img.setAttribute('alt', 'keyworded image');
-	img.setAttribute('class', 'img-fluid mt-3');
-	img.style.height = that.imgHeightPercent + heightPercent + '%';
-	img.style.width = that.imgWidthPercent + widthPercent + '%';
+	let img = createFullElement({'type': 'img', 'propsObj': {'src': url, 'alt': 'keyworded image', 'class': 'img-fluid mt-3'}});
+	let imgHeight = that.imgHeightPercent + heightPercent + '%';
+	let imgWidth = that.imgWidthPercent + widthPercent + '%';
+	addStyleProps({'el': img, 'styles': {'height': imgHeight, 'width': imgWidth}});
 	return img;
 }
 
 function createCloseBtn(currentDivId) {
-	let closeLink = document.createElement('a');
-	closeLink.setAttribute('href', '#');
-	closeLink.setAttribute('class', 'btn btn-danger');
-	closeLink.innerText = 'X';
-	closeLink.style.position = 'absolute';
-	closeLink.style.marginLeft = '-50px';
-	closeLink.style.marginTop = '20px';
+	let closeLink = createFullElement({'type': 'a', 'propsObj': {'href': '#', 'class': 'btn btn-danger'}, 'innerText': 'X', 'innerHTML': '', 'htmls': ''});
+	addStyleProps({'el': closeLink, 'styles': {'position': 'absolute', 'marginLeft': '-50px', 'marginTop': '20px'}});
 	closeLink.onclick = () => clearImageDivContainer(currentDivId);
 	return closeLink;
 }
 
 function createZoomInBtn(currentDivId) {
-	let zoomInLink = document.createElement('a');
-	zoomInLink.setAttribute('href', '#');
-	zoomInLink.setAttribute('class', 'btn btn-primary');
-	zoomInLink.innerText = '+';
-	zoomInLink.style.position = 'absolute';
-	zoomInLink.style.marginLeft = '-50px';
-	zoomInLink.style.marginTop = '70px';
+	let zoomInLink = createFullElement({'type': 'a', 'propsObj': {'href': '#', 'class': 'btn btn-primary'}, 'innerText': '+', 'innerHTML': '', 'htmls': '' });
+	addStyleProps({'el': zoomInLink, 'styles': {'position': 'absolute', 'marginLeft': '-50px', 'marginTop': '70px'}});
+	// let zoomInLink = document.createElement('a');
+	// zoomInLink.setAttribute('href', '#');
+	// zoomInLink.setAttribute('class', 'btn btn-primary');
+	// zoomInLink.innerText = '+';
+	// zoomInLink.style.position = 'absolute';
+	// zoomInLink.style.marginLeft = '-50px';
+	// zoomInLink.style.marginTop = '70px';
 	zoomInLink.onclick = () => zoomInImg(currentDivId);
 	return zoomInLink;
 }
@@ -596,3 +587,4 @@ function showHideURLform() {
 function showHideBrowseImgform() {
 	showHideContainer('browseImg');
 }
+
