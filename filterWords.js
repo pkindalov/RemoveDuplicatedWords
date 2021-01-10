@@ -207,10 +207,7 @@ function copyWords(data = '') {
 		cls = data.cls ? data.cls : 'bg bg-success';
 		words = data.words ? data.words : that.allWords;
 	}
-	// let {words, msg, cls} = data;
-	// const el = document.createElement('textarea');
 	const el = createFullElement({'type': 'textarea', 'propsObj': {}, 'innerText': '', 'innerHTML': '', 'htmls': ''});
-	// el.value = that.allWords.join(', ');
 	el.value = words.join(', ');
 	addElToBody(el);
 	copyToClipboard(el);
@@ -349,12 +346,11 @@ that.imgInputCont.addEventListener('focus', function(e) {
 });
 
 function isImgContValid() {
-	// const MIN_CHILDREN_COUNT = 1;
-	// return that.imgDivCont && that.imgDivCont.children.length < MIN_CHILDREN_COUNT;
 	return that.imgDivCont ? true : false;
 }
 
 function putImageFromClipboard() {
+	if(!checkForNavigator()) return;
 	navigator.clipboard
 		.readText()
 		.then((text) => {
@@ -372,6 +368,13 @@ function putImageFromClipboard() {
 		.catch((err) => {
 			console.error('Failed to read clipboard contents: ', err);
 		});
+}
+
+function checkForNavigator(){
+	if(!navigator || !navigator.clipboard){
+		return false;
+	}
+	return true;
 }
 
 function isThereImgURL(text) {
@@ -392,8 +395,6 @@ function getURL(data) {
 	return text.substr(start, end + extension.length);
 }
 
-
-//Continue refactoring from here
 function showImgByURL(url) {
 	that.imgCountId++;
 	let currentDivId = that.imgCountId;
@@ -427,13 +428,6 @@ function createCloseBtn(currentDivId) {
 function createZoomInBtn(currentDivId) {
 	let zoomInLink = createFullElement({'type': 'a', 'propsObj': {'href': '#', 'class': 'btn btn-primary'}, 'innerText': '+', 'innerHTML': '', 'htmls': '' });
 	addStyleProps({'el': zoomInLink, 'styles': {'position': 'absolute', 'marginLeft': '-50px', 'marginTop': '70px'}});
-	// let zoomInLink = document.createElement('a');
-	// zoomInLink.setAttribute('href', '#');
-	// zoomInLink.setAttribute('class', 'btn btn-primary');
-	// zoomInLink.innerText = '+';
-	// zoomInLink.style.position = 'absolute';
-	// zoomInLink.style.marginLeft = '-50px';
-	// zoomInLink.style.marginTop = '70px';
 	zoomInLink.onclick = () => zoomInImg(currentDivId);
 	return zoomInLink;
 }
@@ -466,9 +460,8 @@ that.imgBrowseCont.addEventListener('change', function() {
 
 that.imgInputCont.addEventListener('keypress', function(e) {
 	let imgURL = e.target.value;
-
 	if (!imgURL || imgURL.indexOf('http') < 0) {
-		alert('Invalid Input. Please enter a valid URL');
+		notification({'msg': 'Invalid Input. Please enter a valid URL', 'cls': 'bg bg-danger'});
 		return;
 	}
 
@@ -476,7 +469,6 @@ that.imgInputCont.addEventListener('keypress', function(e) {
 		case 'enter':
 			showImgByURL(imgURL);
 			break;
-
 		default:
 			break;
 	}
@@ -557,23 +549,14 @@ function closeZoomedImg(currentDivId) {
 function clearImageDivContainer(currentDivId) {
 	let elementForRemoving = document.getElementById('image' + currentDivId);
 	elementForRemoving.remove();
-	// that.imgDivCont = document.getElementById('imgContainer');
-	// that.imgDivCont.innerHTML = '';
 }
 
 function readBrowseImg(input) {
 	if (input.files && input.files[0]) {
 		let reader = new FileReader();
-
 		reader.onload = function(e) {
 			let link = e.target.result;
 			showImgByURL(link);
-			// let img = createImgEl(link, {heightPercent: 20, widthPercent: 20});
-			// let img = document.createElement('img');
-			// img.src = e.target.result;
-			// img.setAttribute('height', '40%');
-			// img.setAttribute('width', '40%');
-			// that.imgDivCont.append(img);
 		};
 
 		reader.readAsDataURL(input.files[0]);
